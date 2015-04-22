@@ -23,6 +23,29 @@ function! vison#resolver#resolve(json_dict, query)
   endfor
 endfunction
 
+function! s:resolve_prop (json_dict, ref_string)
+  let query = map(split(a:ref_string, '/'), '{"key": v:val, "enumerable": 0}')
+  if len(query)
+    if query[0].key ==# '#'
+      call remove(query, 0)
+
+      let parent = a:json_dict
+      for prop in query
+        if has_key(parent, prop.key)
+          let parent = parent[prop.key]
+          "TODO multiple $ref
+        else
+          return {}
+        endif
+      endfor
+      return parent
+    else
+      "TODO vison can resolve only such as '#/aaa/bbb'
+      return {}
+    endif
+  endif
+endfunction
+
 function! vison#resolver#prop_descriptors(json_dict, query, base)
   " Check schema.
   if !has_key(a:json_dict, 'properties')
@@ -31,9 +54,12 @@ function! vison#resolver#prop_descriptors(json_dict, query, base)
 
   let prop_def = a:json_dict
   for prop in a:query
-    if has_key(prop_def, prop.key)
-    else
-      break
+    if has_key(prop_def, 'properties')
+      if has_key(prop_def.properties, prop.key)
+        let prop_def = prop_def.properties[prop.key]
+      else
+        break
+      endif
     endif
   endfor
 
@@ -43,7 +69,12 @@ function! vison#resolver#prop_descriptors(json_dict, query, base)
     if a:base !=# '' && stridx(prop_name, a:base) == -1
       continue
     endif
-    call add(result, {'name': prop_name, 'descriptor': prop_def.properties[prop_name]})
+    let prop_item = prop_def.properties[prop_name]
+    if has_key(prop_item, '$ref')
+      call add(result, {'name': prop_name, 'descriptor': s:resolve_prop(a:json_dict, prop_item['$ref'])})
+    else
+      call add(result, {'name': prop_name, 'descriptor': prop_item})
+    endif
   endfor
 
   return result
