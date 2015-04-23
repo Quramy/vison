@@ -20,7 +20,7 @@ function! vison#complete(findstart, base)
   let l:line = line('.')
   let l:offset = col('.')
   
-  " search backwards for start of identifier (iskeyword pattern)
+  " Search backwards for start of identifier (iskeyword pattern)
   let l:start = l:offset 
   while l:start > 0 && l:line_str[l:start-2] =~ "\\k"
     let l:start -= 1
@@ -28,7 +28,7 @@ function! vison#complete(findstart, base)
 
   if a:findstart
     " Get query from the current buffer.
-    let [b:type, b:query] = vison#resolver#get_query(getline(0, '$'))
+    let [b:type, b:query] = vison#resolver#get_query(getline(0, l:line))
     return l:start - 1
   else
 
@@ -41,6 +41,7 @@ function! vison#complete(findstart, base)
 
     let [matched, schema_path] = vison#detect_schema(exists('b:schema_type') ? b:schema_type : '')
     if !matched
+      echom "[vison] Can't find schema."
       return []
     endif
     let schema_dict = vison#loader#file_loader(schema_path)
@@ -183,6 +184,16 @@ function! vison#get_catalog()
 endfunction
 
 " ## Management shemas }}}
+
+let g:vison_group_register = {}
+
+let s:ssloader = {
+      \ 'git': 'https://github.com/SchemaStore/schemastore.git',
+      \ 'base': 'src/schemas/json',
+      \ 'ignore': []
+      \ }
+
+let g:vison_group_register.schemastore = s:ssloader
 
 function! s:complete_core()
   " underscore charactor stands for the cursor position.
