@@ -46,25 +46,7 @@ function! vison#complete(findstart, base)
     endif
     let schema_dict = vison#loader#file_loader(schema_path)
 
-    let descriptors = vison#resolver#prop_descriptors(schema_dict, b:query, a:base)
-    let result = []
-    for description in descriptors
-      let comp_item = {} 
-      if b:type == 1
-        " User is going to write key string.
-        let comp_item.word = '"'.description.name.'":'
-      elseif b:type == 6
-        " Uset is writing key string.
-        let comp_item.word = description.name.'":'
-      else
-        let comp_item.word = description.name
-      endif
-      if has_key(description.descriptor, 'description') 
-        let comp_item.menu = description.descriptor.description
-      endif
-      call add(result, comp_item)
-    endfor
-    return result
+    return vison#resolver#complete(schema_dict, b:query, a:base)
   endif
 endfunction
 " ### Complete }}}

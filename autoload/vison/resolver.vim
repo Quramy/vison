@@ -221,3 +221,27 @@ function! vison#resolver#get_query(lines)
   return [mode, buf_list]
 endfunction
 " ### parse JSON }}}
+
+" ### Complete {{{
+function! vison#resolver#complete(json_dict, query, base)
+  let descriptors = vison#resolver#prop_descriptors(a:json_dict, a:query, a:base)
+  let result = []
+  for description in descriptors
+    let comp_item = {} 
+    if b:type == 1
+      " User is going to write key string.
+      let comp_item.word = '"'.description.name.'":'
+    elseif b:type == 6
+      " Uset is writing key string.
+      let comp_item.word = description.name.'":'
+    else
+      let comp_item.word = description.name
+    endif
+    if has_key(description.descriptor, 'description') 
+      let comp_item.menu = description.descriptor.description
+    endif
+    call add(result, comp_item)
+  endfor
+  return result
+endfunction
+" ### Complete }}}
