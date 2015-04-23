@@ -14,6 +14,12 @@ function! vison#base_dir()
   return s:base_dir
 endfunction
 
+" ### Setup {{{
+function! vison#setup()
+  return vison#store#setup()
+endfunction
+" ### Setup }}}
+
 " ### Complete {{{
 function! vison#complete(findstart, base)
   let l:line_str = getline('.')
@@ -71,30 +77,28 @@ endfunction
 
 " ## Management shemas {{{
 " ### Register {{{
-function! vison#regist_schema(group_name, type_name)
+function! vison#register_schema(group_name, type_name)
   if a:type_name == ''
     echom '[vison] Schema name is empty.'
     return
   endif
 
-  let file_name = s:Filepath.join(s:Filepath.join(g:vison_data_directory, a:group_name), a:type_name)
-  call s:File.mkdir_nothrow(s:Filepath.join(g:vison_data_directory, a:group_name), 'p')
-  call writefile(getline(0, '$'), file_name)
+  return vison#store#register(a:group_name, a:type_name, getline(0, '$'))
 endfunction
 
-function! vison#regist_default_schema(...)
+function! vison#register_default_schema(...)
   if a:0 > 1
     let type_name = a:1
   else
     let type_name = expand('%:t')
   endif
-  call vison#regist_schema('default', type_name)
+  call vison#register_schema('default', type_name)
 endfunction
 " ### Register }}}
 
 " ### Detection {{{
 function! vison#detect_schema(schema_type)
-  let catalog = vison#get_catalog()
+  let catalog = vison#store#get_catalog()
   if !len(catalog)
     return [0, '']
   endif
@@ -150,7 +154,7 @@ endfunction
 " ### Detection }}}
 
 function! vison#get_schemanames()
-  let catalog = vison#get_catalog()
+  let catalog = vison#store#get_catalog()
   let tmp_map = {}
   if len(catalog)
     for filename in catalog
@@ -159,18 +163,13 @@ function! vison#get_schemanames()
   endif
   return keys(tmp_map)
 endfunction
-
-function! vison#get_catalog()
-  let files = globpath(expand(g:vison_data_directory), '**/*.json')
-  return split(files, "\n")
-endfunction
-
 " ## Management shemas }}}
 
 let g:vison_group_register = {}
 
 let s:ssloader = {
-      \ 'git': 'https://github.com/SchemaStore/schemastore.git',
+      \ 'type': 'git',
+      \ 'url': 'https://github.com/SchemaStore/schemastore.git',
       \ 'base': 'src/schemas/json',
       \ 'ignore': []
       \ }
