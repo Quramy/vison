@@ -26,13 +26,13 @@ if !exists('g:vison_store_groups')
 endif
 
 let s:default_loader = {
-      \ 'type': '__default__'
+      \ 'type': 'default'
       \ }
 
 let s:ssloader = {
       \ 'type': 'git',
       \ 'url': 'https://github.com/SchemaStore/schemastore.git',
-      \ 'base': 'src/schemas/json',
+      \ 'basedir': ['src/schemas/json'],
       \ 'ignore': []
       \ }
 

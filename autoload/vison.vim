@@ -45,7 +45,7 @@ function! vison#complete(findstart, base)
       return []
     endif
 
-    let [matched, schema_path] = vison#detect_schema(exists('b:schema_type') ? b:schema_type : '')
+    let [matched, schema_path] = vison#store#get_schemafile(exists('b:vison_schema_type') ? b:vison_schema_type : '', 0)
     if !matched
       echom "[vison] Can't find schema."
       return []
@@ -59,12 +59,12 @@ endfunction
 
 " ### Switch schema type {{{
 function! vison#switch_type(schema_type)
-  let b:schema_type = a:schema_type
+  let b:vison_schema_type = a:schema_type
   setlocal omnifunc=vison#complete
 endfunction
 
 function! vison#switch_type_complete(ArgLead, CmdLine, CursorPos)
-  let key_list = vison#get_schemanames()
+  let key_list = vison#store#get_schemanames()
   let matched = []
   for key_str in key_list
     if stridx(key_str, a:ArgLead) == 0
@@ -95,87 +95,8 @@ function! vison#register_default_schema(...)
   call vison#register_schema('default', type_name)
 endfunction
 " ### Register }}}
-
-" ### Detection {{{
-function! vison#detect_schema(schema_type)
-  let catalog = vison#store#get_catalog()
-  if !len(catalog)
-    return [0, '']
-  endif
-
-  if a:schema_type == ''
-    let schema_name = expand('%:t')
-    let mode = 1
-  else
-    let schema_name = a:schema_type
-    let mode = 0
-  endif
-
-  let [matched, result_path] = [0, '']
-
-  let defaults = []
-  for filepath in catalog
-    if stridx(filepath, s:Filepath.join(expand(g:vison_data_directory), 'default')) == 0
-      call add(defaults, filepath)
-    else
-      if vison#match_schema(schema_name, filepath, mode)
-        let [matched, result_path] = [1, filepath]
-      endif
-    endif
-  endfor
-
-  for filepath in defaults
-    if vison#match_schema(schema_name, filepath, mode)
-      let [matched, result_path] = [1, filepath]
-      break
-    endif
-
-    "let file_base = s:Filepath.basename(filepath)
-    "echo file_base
-    "if file_base == self_base
-    "  let [matched, result_path] = [1, filepath]
-    "  break
-    "endif
-  endfor
-  return [matched, result_path]
-endfunction
-
-function! vison#match_schema(schema_type, filename, mode)
-  let file_base = s:Filepath.basename(a:filename)
-  if file_base == a:schema_type
-    let matched = 1
-    return 1
-  endif
-  if a:mode
-    "TODO
-  endif
-  return 0
-endfunction
-" ### Detection }}}
-
-function! vison#get_schemanames()
-  let catalog = vison#store#get_catalog()
-  let tmp_map = {}
-  if len(catalog)
-    for filename in catalog
-      let tmp_map[s:Filepath.basename(filename)] = 1
-    endfor
-  endif
-  return keys(tmp_map)
-endfunction
 " ## Management shemas }}}
-
-let g:vison_group_register = {}
-
-let s:ssloader = {
-      \ 'type': 'git',
-      \ 'url': 'https://github.com/SchemaStore/schemastore.git',
-      \ 'base': 'src/schemas/json',
-      \ 'ignore': []
-      \ }
-
-let g:vison_group_register.schemastore = s:ssloader
-
+"
 function! s:complete_core()
   " underscore charactor stands for the cursor position.
   " case 1: {_

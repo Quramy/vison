@@ -17,7 +17,6 @@ Vison provides:
 * completion keys from schema.
 * manegement JSON schema files.
 
-
 ## How to install
 
 If you use NeoBundle for Vim plugins management, append the following to your `.vimrc`:
@@ -29,12 +28,14 @@ NeoBundle 'Quramy/vison'
 And exec `:NeoBundleInstall`.
 
 ## Getting started
-**T.B.D.**
+After installation, execute `:VisonSetup` command.
+So, vison fetches schema file from [JSON Schema Store](http://schemastore.org/json/).
+(You don't need exec this command at the next Vim launch)
 
 ## Usage
 
 ### Switch schema
-Using omni-completion, you can call the `:VisonSwitch` command.
+Using omni-completion, you can call the `:VisonSwitch` command on the current buffer.
 This command requires an argument, which is schema name.
 
 For example, writing package.json call `:VisonSwitch package.json`
@@ -48,7 +49,7 @@ autocmd BufRead,BufNewFile package.json VisonSwitch package.json
 ### Register schema file
 
 First, open some JSON schema file in Vim.
-Second, exec `:VisonRegistSchema`.
+Second, exec `:VisonRegisterSchema`.
 
 So, the schema file is registered into the vison.
 By the default, the schema file is copied into the `~/.cache/vison/default` directory.
@@ -58,7 +59,10 @@ If the basename is `package.json` then the schema name is also `package.json`.
 
 To set schema name explicitly, call this command with the argument.
 
-For example `:VisonRegistSchema npm-package`.
+For example `:VisonRegisterSchema npm-package`.
 
 ## Customize
 *T.B.D.*
+
+## License
+MIT
