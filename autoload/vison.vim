@@ -43,9 +43,12 @@ function! vison#complete(findstart, base)
     elseif b:type == 0
       "TODO
       return []
+    elseif !has_key(s:type_map, expand('%:p'))
+      return []
     endif
 
-    let [matched, schema_path] = vison#store#get_schemafile(exists('b:vison_schema_type') ? b:vison_schema_type : '', 0)
+    "let [matched, schema_path] = vison#store#get_schemafile(exists('b:vison_schema_type') ? b:vison_schema_type : '', 0)
+    let [matched, schema_path] = vison#store#get_schemafile(s:type_map[expand('%:p')], 0)
     if !matched
       echom "[vison] Can't find schema."
       return []
@@ -58,8 +61,24 @@ endfunction
 " ### Complete }}}
 
 " ### Switch schema type {{{
-function! vison#switch_type(schema_type)
-  let b:vison_schema_type = a:schema_type
+let s:type_map = {}
+function! vison#switch_type(...)
+  if a:0 == 0
+    let schemaname = expand('%')
+    let buf_name = expand('%:p')
+  elseif a:0 == 1
+    let schemaname = a:1
+    let buf_name = expand('%:p')
+  elseif a:0 > 1
+    let schemaname = a:1
+    let buf_name = expand(a:2)
+  else
+    return
+  endif
+  if buf_name == ''
+    return
+  endif
+  let s:type_map[buf_name] = schemaname
   setlocal omnifunc=vison#complete
 endfunction
 

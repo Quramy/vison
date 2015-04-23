@@ -41,7 +41,7 @@ let g:vison_store_groups.schema_store = s:ssloader
 " ### Global config }}}
 
 command! VisonSetup call vison#setup()
-command! -nargs=1 -complete=customlist,vison#switch_type_complete VisonSwitch call vison#switch_type(<f-args>)
+command! -nargs=* -complete=customlist,vison#switch_type_complete Vison call vison#switch_type(<f-args>)
 command! -nargs=+ VisonRemoveSchema call vison#remove_schema(<f-args>)
 command! -nargs=? VisonRegisterSchema call vison#register_default_schema(<f-args>)
 
