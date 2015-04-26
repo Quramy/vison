@@ -1,0 +1,19 @@
+{
+	"title": "Array01",
+	"$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "arrayProp": {
+      "description": "A string prop",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "stringProp": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

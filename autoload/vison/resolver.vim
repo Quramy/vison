@@ -64,6 +64,7 @@ function! vison#resolver#prop_descriptors(json_dict, query, base)
   endfor
 
   let props = keys(prop_def.properties)
+
   let result = []
   for prop_name in props
     if a:base !=# '' && stridx(prop_name, a:base) == -1

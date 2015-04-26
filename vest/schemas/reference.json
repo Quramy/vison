@@ -1,0 +1,16 @@
+{
+	"title": "schema with reference",
+	"$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "definitions": {
+    "stringProp": {
+      "description": "A string prop",
+      "type": "string"
+    }
+  },
+  "properties": {
+    "alias": {
+      "$ref": "#/definitions/stringProp"
+    }
+  }
+}
