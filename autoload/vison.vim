@@ -22,6 +22,14 @@ endfunction
 
 " ### Switch schema type {{{
 let s:type_map = {}
+function! vison#get_selected_type()
+  if has_key(s:type_map, expand('%:p'))
+    return s:type_map[expand('%:p')]
+  else
+    return ''
+  endif
+endfunction
+
 function! vison#switch_type(...)
   if a:0 == 0
     let schemaname = expand('%:t')

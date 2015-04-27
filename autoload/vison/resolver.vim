@@ -260,10 +260,6 @@ endfunction
 " ### Complete {{{
 let s:completer = {}
 
-function! s:completer.unknown(json_dict, type, query, base)
-  return []
-endfunction
-
 function! vison#resolver#make_typestr(descriptor, root_dict)
   if has_key(a:descriptor, 'enum')
     let tmp = []
@@ -294,7 +290,13 @@ function! vison#resolver#make_typestr(descriptor, root_dict)
       let tmp = a:descriptor.type
     endtry
     return join(tmp, ' | ')
+  else
+    return 'unknown'
   endif
+endfunction
+
+function! s:completer.unknown(json_dict, type, query, base)
+  return []
 endfunction
 
 function! s:completer.key(json_dict, type, query, base)
