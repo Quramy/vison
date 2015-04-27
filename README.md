@@ -2,21 +2,13 @@
 
 Vison is a Vim plugin to help writing `*.json` file with JSON Schema.
 
-Do you think "What kind keys does this JSON need" ?
+Vison provides the following features:
 
-Can you remember structure of the JSON file ?
+* Completion keys or values with JSON schema.
+ * You can use more than 40 schema files provided [JSON Schema Store](http://schemastore.org/json/).
+* Manegement JSON schema files.
 
-And do you open your browser and search "package.json" or "bower.json" ?
-
-Always I do. And I feel disgusted that I come and go between my browser and Vim.
-
-So, I make this plugin.
-
-Vison provides:
-
-* completion keys or values with JSON schema.
- * You can use schema files provided [JSON Schema Store](http://schemastore.org/json/)
-* manegement JSON schema files.
+![capture](capt_comp.png)
 
 ## How to install
 
@@ -28,7 +20,7 @@ And, installation of the following Vim plugin is recommend:
 
 * [Shougo/unite.vim](https://github.com/Shougo/unite.vim)
 
-If you use NeoBundle for Vim plugins management, append the following to your `.vimrc`:
+If you use [NeoBundle](https://github.com/Shougo/neobundle.vim) for Vim plugins management, append the following to your `.vimrc`:
 
 ```vim
 NeoBundle 'Shougo/unite.vim'
@@ -37,7 +29,7 @@ NeoBundle 'Quramy/vison'
 
 And exec `:NeoBundleInstall`.
 
-After installation, execute `:VisonSetup` command.
+After installation, **execute `:VisonSetup` command**.
 So, vison fetches schema file from [JSON Schema Store](http://schemastore.org/json/).
 You don't need exec this command at the next Vim launch.
 
@@ -65,6 +57,8 @@ If you have installed [Unite](https://github.com/Shougo/unite.vim), you can get 
 
 And select a candidate, the selected schema apply to the current buffer.
 
+![capture](capt_unite.png)
+
 ### Register schema files
 Open some JSON schema file in Vim and exec `:VisonRegisterSchema`.
 Then, the schema file is registered into the vison.
@@ -78,8 +72,23 @@ To set schema name explicitly, call this command with the argument.
 
 For example `:VisonRegisterSchema npm-package`.
 
+### Customize completion
+You can configure completion with the `completeopt` option.
+
+If you don't want the popup menu:
+
+```vim
+autocmd FileType json setlocal completeopt-=menu
+```
+
+If you want to show more informations in the preview window when completion:
+
+```vim
+autocmd FileType json setlocal completeopt+=menu,preview
+```
+
 ### Customize schema store
-**T.B.D.**
+*T.B.D.*
 
 ## License
 MIT
