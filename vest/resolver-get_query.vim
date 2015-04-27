@@ -11,12 +11,15 @@ Context vison#resolver#get_query
     Should vison#resolver#get_query(['null']) == [10, []]
     Should vison#resolver#get_query(['10']) == [2, []]
     Should vison#resolver#get_query(['-1']) == [2, []]
+    Should vison#resolver#get_query(['3.0']) == [2, []]
+    Should vison#resolver#get_query(['3.0e10']) == [2, []]
   End
   It returns -1 of type with invalid value
-    Should vison#resolver#get_query(['tRUE']) == [-1, []]
+    Should vison#resolver#get_query(['tr']) == [11, []]
+    Should vison#resolver#get_query(['tRUE']) == [11, []]
     Should vison#resolver#get_query(['TRUE']) == [-1, []]
     Should vison#resolver#get_query(['False']) == [-1, []]
-    Should vison#resolver#get_query(['fAlse']) == [-1, []]
+    Should vison#resolver#get_query(['fAlse']) == [11, []]
   End
   It returns keys of incomplete JSON input
     Should vison#resolver#get_query(['{']) == [1, []]
@@ -24,6 +27,8 @@ Context vison#resolver#get_query
     Should vison#resolver#get_query(['{"hoge']) == [6, []]
     Should vison#resolver#get_query(['{"hoge"']) == [3, [{'key': 'hoge', 'enumerable': 0}]]
     Should vison#resolver#get_query(['{"hoge":']) == [0, [{'key': 'hoge', 'enumerable': 0}]]
+    Should vison#resolver#get_query(['{"hoge": "']) == [8, [{'key': 'hoge', 'enumerable': 0}]]
+    Should vison#resolver#get_query(['{"hoge": "\']) == [9, [{'key': 'hoge', 'enumerable': 0}]]
     Should vison#resolver#get_query(['{"hoge": {']) == [1, [{'key': 'hoge', 'enumerable': 0}]]
     Should vison#resolver#get_query(['{"hoge": {"']) == [6, [{'key': 'hoge', 'enumerable': 0}]]
     Should vison#resolver#get_query(['{"hoge": {"foo": [']) == [0, [{'key': 'hoge', 'enumerable': 0}, {'key': 'foo', 'enumerable': 0}, {'key': '$array', 'enumerable': 1}]]
@@ -38,6 +43,7 @@ Context vison#resolver#get_query
           \ '  }, {',
           \ '    "name":'
           \ ]
+    "echo vison#resolver#get_query(input_lines) 
     Should vison#resolver#get_query(input_lines) == [0, [{'key': 'directories', 'enumerable': 0}, {'key': '$array', 'enumerable': 1}, {'key': 'name', 'enumerable': 0}]]
   End
 End

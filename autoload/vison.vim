@@ -84,14 +84,14 @@ function! vison#complete(findstart, base)
     endwhile
     return l:start - 1
   else
-    if b:type == -1
-      return []
-    elseif b:type == 0
-      "TODO
-      return []
-    endif
+    " if b:type == -1
+    "   return []
+    " elseif b:type == 0
+    "   "TODO
+    "   return []
+    " endif
 
-    return vison#resolver#complete(b:cached_dict, b:query, a:base)
+    return vison#resolver#complete(b:cached_dict, b:type, b:query, a:base)
 
   endif
 endfunction
