@@ -16,8 +16,8 @@ Context vison#resolver#prop_descriptors
 
   It returns descriptors with a query which includes array notation.
     let file_loader_dict = vison#misc#load(s:Filepath.join(vison#base_dir(), 'vest/schemas/array01.json'))
-    Should vison#resolver#prop_descriptors(file_loader_dict, [{'key': 'arrayProp', 'enumerable': 1}], '')
-          \ ==[{'name': 'stringProp', 'descriptor': {'type': 'string'}}]
+    Should vison#resolver#prop_descriptors(file_loader_dict, [{'key': '$array', 'enumerable': 1}], '')
+          \ == [{'name': 'stringProp', 'descriptor': {'type': 'string'}}]
   End
 End
 

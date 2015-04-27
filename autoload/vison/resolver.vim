@@ -7,79 +7,95 @@ scriptencoding utf-8
 
 let s:V = vital#of('vison')
 
-function! vison#resolver#resolve(json_dict, query)
-
-  " Check schema.
-  if !has_key(json_dict, 'properties')
-    return
-  endif
-
-  let prop_def = json_dict.properties
-  for prop in query
-    if has_key(prop_def, prop.key)
-    else
-      break
-    endif
-  endfor
-endfunction
-
-function! s:resolve_prop (json_dict, ref_string)
-  let query = map(split(a:ref_string, '/'), '{"key": v:val, "enumerable": 0}')
-  if len(query)
-    if query[0].key ==# '#'
-      call remove(query, 0)
-
-      let parent = a:json_dict
-      for prop in query
-        if has_key(parent, prop.key)
-          let parent = parent[prop.key]
-          "TODO multiple $ref
-        else
-          return {}
-        endif
-      endfor
-      return parent
-    else
-      "TODO vison can resolve only such as '#/aaa/bbb'
-      return {}
-    endif
+function! s:get_as_str(dict, key)
+  if has_key(a:dict, a:key)
+    return join([a:dict[a:key]])
+  else
+    return ''
   endif
 endfunction
 
-function! vison#resolver#prop_descriptors(json_dict, query, base)
-  " Check schema.
-  if !has_key(a:json_dict, 'properties')
-    return
-  endif
+function! s:has_match(dict, key, needle)
+  if !has_key(a:dict, a:key)
+    return -1
+  end
+  return match(a:dict[a:key], a:needle)
+endfunction
 
-  let prop_def = a:json_dict
+" ### Walking Nodes {{{
+function! vison#resolver#resolve_reference(node, root_dict)
+  if !has_key(a:node, '$ref')
+    return [1, a:node]
+  endif
+  let query = map(split(a:node['$ref'], '/'), '{"key": v:val, "enumerable": -1}')
+  if !len(query)
+    return [0, {}]
+  endif
+  if query[0].key !=# '#'
+    return [0, {}]
+  endif
+  call remove(query, 0)
+  "echo query
+  return vison#resolver#get_node(a:root_dict, a:root_dict, query)
+endfunction
+
+function! vison#resolver#get_node(node, root_dict, query)
+  let [parent, matched] = [a:node, 1]
+  " Visit for part of queries
   for prop in a:query
-    if has_key(prop_def, 'properties')
-      if has_key(prop_def.properties, prop.key)
-        let prop_def = prop_def.properties[prop.key]
-      else
-        break
+    if s:has_match(parent, 'type', 'array') != -1
+      if prop.key !=# '$array'
+        return [0, {}]
       endif
-    endif
-  endfor
-
-  let props = keys(prop_def.properties)
-
-  let result = []
-  for prop_name in props
-    if a:base !=# '' && stridx(prop_name, a:base) == -1
+      if !has_key(parent, 'items')
+        return [0, {}]
+      endif
+      let parent = parent.items
       continue
     endif
-    let prop_item = prop_def.properties[prop_name]
-    if has_key(prop_item, '$ref')
-      call add(result, {'name': prop_name, 'descriptor': s:resolve_prop(a:json_dict, prop_item['$ref'])})
-    else
-      call add(result, {'name': prop_name, 'descriptor': prop_item})
+    if prop.key ==# 'definitions'
+      if has_key(parent, 'definitions')
+        let parent = {'properties': parent.definitions, 'type': 'object'}
+        continue
+      else
+        return [0, {}]
+      endif
+    elseif s:has_match(parent, 'type', 'object') != -1
+      if prop.enumerable != -1 && prop.enumerable != 0  " Object
+        return [0, {}]
+      endif
+      if !has_key(parent, 'properties') || !has_key(parent.properties, prop.key)
+        return [0, {}]
+      endif
+      let [matched, parent] = vison#resolver#resolve_reference(parent.properties[prop.key], a:root_dict)
+    else 
+      return [0, {}]
+    endif
+  endfor
+  return [matched, parent]
+endfunction
+" ### Walking Nodes }}}
+
+" ### Get description {{{
+function! vison#resolver#prop_descriptors(json_dict, query, base)
+  let result = []
+  let [matched, node] = vison#resolver#get_node(a:json_dict, a:json_dict, a:query)
+  if !matched || !has_key(node, 'properties')
+    return result
+  endif
+  for prop_name in keys(node.properties)
+    if a:base !=# '' && stridx(prop_name, a:base) != 0
+      continue
+    endif
+    let [matched, desc] = vison#resolver#resolve_reference(node.properties[prop_name], a:json_dict)
+    if matched
+      call add(result, {'name': prop_name, 'descriptor': desc})
     endif
   endfor
 
   return result
 endfunction
+" ### Get description }}}
 
 " ### parse JSON {{{
 function! vison#resolver#get_query(lines)
@@ -107,7 +123,8 @@ function! vison#resolver#get_query(lines)
         let mode = 1
       elseif c ==# '['
         if len(buf_list)
-          let buf_list[len(buf_list) - 1].enumerable = 1
+          "let buf_list[len(buf_list) - 1].enumerable = 1
+          call add(buf_list, {'key': '$array', 'enumerable': 1})
         endif
         let is_array = is_array + 1
       elseif c ==# 't' " is matched false
@@ -238,8 +255,10 @@ function! vison#resolver#complete(json_dict, query, base)
     else
       let comp_item.word = description.name
     endif
+
+    let comp_item.menu = s:get_as_str(description.descriptor, 'type')
     if has_key(description.descriptor, 'description') 
-      let comp_item.menu = description.descriptor.description
+      let comp_item.menu = comp_item.menu.', '.description.descriptor.description
     endif
     call add(result, comp_item)
   endfor
