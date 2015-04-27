@@ -1,6 +1,6 @@
 *vison.txt* Vim plugin for writing JSON with JSON Schema.
 
-Version: 0.1.0
+Version: 0.1.1
 Author : Quramy <yosuke.kurami@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -26,7 +26,7 @@ CONTENTS 					*vison-contents*
 
 Introduction		|vison-introduction|
 Install			|vison-install|
-Interface		|vison-interfaces|
+Interface		|vison-interface|
   Commands		  |vison-commands|
   Variables		  |vison-variables|
   Functions		  |vison-functions|
@@ -51,8 +51,16 @@ Vison requires the following:
 And installation the following plugin is recommended.
 * |unite| (https://github.com/Shougo/unite.vim)
 
+If you use |neobundle| for Vim plugins management, configure `.vimrc` as
+following:
+>
+	NeoBundle 'Shougo/unite.vim'
+	NeoBundle 'Quramy/vison'
+
+And execute the |:NeoBundleInstall| command, both |unite| and |vison| are installed.
+
 After installation, execute the Ex command |:VisonSetup|. So, vison fetches
-schema files from JSON Schema Store(http://schemastore.org/json/)
+schema files from JSON Schema Store(http://schemastore.org/json/).
 
 NOTE:  You don't need exucute this command at the next vim launch.
 
@@ -75,9 +83,9 @@ COMMANDS					*vison-commands*
 		autocmd BufRead,BufNewFile .bowerrc Vison bowerrc.json
 <
 		You can explicitly set a schema group with
-		{groupname/shemaName} notation. For example:
+		{groupname#shemaName} notation. For example:
 >
-		:Vison schema_store/package.json
+		:Vison schema_store#package.json
 <
 		Without schema group name, vison first search schema file 
 		from `"default"` schema group. If not hit, vison search from
@@ -129,6 +137,15 @@ vison
 		Provides candidates from schema files which you can select.
 		These candidates' kind is |unite-kind-command|. And the
 		command of this action is equivalent to |:Vison| command.
+		
+		Source arguments:
+		group name. For example:
+>
+		:Unite vison:schema_store
+<
+		The following group names are available also:
+		`"."` : Show short schemanames that vison compute.
+		`"*"` : Show all schema groups.
 
 ==============================================================================
 CUSTOMIZE					*vison-customize*
