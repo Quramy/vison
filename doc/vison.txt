@@ -1,0 +1,141 @@
+*vison.txt* Vim plugin for writing JSON with JSON Schema.
+
+Version: 0.1.0
+Author : Quramy <yosuke.kurami@gmail.com>
+License: MIT license  {{{
+    Permission is hereby granted, free of charge, to any person obtaining
+    a copy of this software and associated documentation files (the
+    "Software"), to deal in the Software without restriction, including
+    without limitation the rights to use, copy, modify, merge, publish,
+    distribute, sublicense, and/or sell copies of the Software, and to
+    permit persons to whom the Software is furnished to do so, subject to
+    the following conditions:
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+    OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+    IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+    CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+    TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+    SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+}}}
+
+CONTENTS 					*vison-contents*
+
+Introduction		|vison-introduction|
+Install			|vison-install|
+Interface		|vison-interfaces|
+  Commands		  |vison-commands|
+  Variables		  |vison-variables|
+  Functions		  |vison-functions|
+Unite Sources		|vison-unite-sources|
+Customize		|vison-customize|
+  Schema group		  |vison-schema-group|
+
+==============================================================================
+INTRODUCTION					*vison-introduction*
+
+*vison* is a Vim plugin for writing JSON files with JSON Schema
+(http://json-schema.org/).
+This plugin provides completion for keys and values of JSON files, and
+management functions JSON schema files.
+
+==============================================================================
+INSTALL						*vison-install*
+
+Vison requires the following:
+* Git command line tool
+
+And installation the following plugin is recommended.
+* |unite| (https://github.com/Shougo/unite.vim)
+
+After installation, execute the Ex command |:VisonSetup|. So, vison fetches
+schema files from JSON Schema Store(http://schemastore.org/json/)
+
+NOTE:  You don't need exucute this command at the next vim launch.
+
+==============================================================================
+INTERFACE					*vison-interface*
+
+------------------------------------------------------------------------------
+COMMANDS					*vison-commands*
+
+:Vison [{schemaName}]					*:Vison*
+		Applies {schemaName} file to the current buffer. Once
+		applying schema, |omni-complete| is enabled in the buffer.
+		You can select {schemaName} from files stored in vison.
+	  	If {schemaName} is omitted, vison regards the basename of the
+		current buffer as the schema name.
+		If you want auto applying schemas, you can use |autocmd|.
+		For example:
+>
+		autocmd BufRead,BufNewFile package.json Vison
+		autocmd BufRead,BufNewFile .bowerrc Vison bowerrc.json
+<
+		You can explicitly set a schema group with
+		{groupname/shemaName} notation. For example:
+>
+		:Vison schema_store/package.json
+<
+		Without schema group name, vison first search schema file 
+		from `"default"` schema group. If not hit, vison search from
+		other schema groups.
+		
+
+:VisonSetup						*:VisonSetup*
+		Installs schema files into vison's schema store.
+
+:VisonRegisterSchema [{schemaName}]			*:VisonRegisterSchema*
+		Registers the current buffer file into vison's schema store.
+		If the argument {schemaName} is omitted, vison regards the
+		basename of the current buffer as the schema name.
+		Note: The files is stored into the `"default"` group dir
+	  	      |g:vison_data_directory|/default
+		Using this command, you can override stored schemas.
+		If some schema group(e.g. schema_store) has a schema file
+		whose name is same to the one you registered, vison selects
+		the one you registered at execution of |:Vison| command.
+
+------------------------------------------------------------------------------
+VARIABLES					*vison-variables*
+
+g:vison_data_directory				*g:vison_data_directory*
+		Specify directories to store schema files.
+		Default value is `"$HOME/.cache/vison"`.
+
+g:vison_store_groups				*g:vison_store_groups*
+		Defines shcema groups with a dictionay.
+		By the default, vison have two schema groups.
+		* `"default"` : This group store schema files you register with
+		  |:VisonRegisterSchema| command.
+		* "`schema_store"` : The schema files installed form 
+		  JSON Schema Store are stored into this group.
+		You can add your original schema groups with this variable.
+		See |schema-group|.
+
+------------------------------------------------------------------------------
+FUNCTIONS					*vison-functions*
+Todo
+
+==============================================================================
+UNITE SOURCES					*vison-unite-sources*
+
+vison provides some |unite| sources.
+
+						*vison-unite-source-vison*
+vison
+		Provides candidates from schema files which you can select.
+		These candidates' kind is |unite-kind-command|. And the
+		command of this action is equivalent to |:Vison| command.
+
+==============================================================================
+CUSTOMIZE					*vison-customize*
+
+------------------------------------------------------------------------------
+SCHEMA GROUP					*vison-schema-group*
+Todo
+
+==============================================================================
+vim:tw=78:ts=8:ft=help:norl:noet:fen:

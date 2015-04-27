@@ -1,10 +1,10 @@
 # vison [![Build Status](https://travis-ci.org/Quramy/vison.svg?branch=master)](https://travis-ci.org/Quramy/vison)
 
-Vison is a Vim plugin to help writing `*.json` file with JSON Schema.
+Vison is a Vim plugin to help writing `*.json` file with [JSON Schema](http://json-schema.org/).
 
 Vison provides the following features:
 
-* Completion keys or values with JSON schema.
+* Completion keys or values in JSON files
  * You can use more than 40 schema files provided [JSON Schema Store](http://schemastore.org/json/).
 * Manegement JSON schema files.
 
@@ -16,7 +16,7 @@ Vison requires the following:
 
 * git command
 
-And, installation of the following Vim plugin is recommend:
+And, installation of the following Vim plugin is recommended:
 
 * [Shougo/unite.vim](https://github.com/Shougo/unite.vim)
 
@@ -36,7 +36,7 @@ You don't need exec this command at the next Vim launch.
 ## Usage
 
 ### Apply schema with command
-Using omni-completion, you can call the `:Vison` command on the current buffer.
+To use omni-completion, you can call the `:Vison` command on the current buffer.
 
 For example, writing package.json(NPM configuration file) call `:Vison package.json`
 
@@ -89,6 +89,9 @@ autocmd FileType json setlocal completeopt+=menu,preview
 
 ### Customize schema store
 *T.B.D.*
+
+### More details
+If you want more details, please see [doc/vison.txt](doc/vison.txt).
 
 ## License
 MIT
