@@ -38,7 +38,7 @@ You don't need exec this command at the next Vim launch.
 ### Apply schema with command
 To use omni-completion, you can call the `:Vison` command on the current buffer.
 
-For example, writing package.json(NPM configuration file) call `:Vison package.json`
+For example, start editing with `vim package.json` (NPM configuration file) and call `:Vison package.json`
 
 If your current buffer's basename is equal to the schema name, you can ommit the argument of this command.
 

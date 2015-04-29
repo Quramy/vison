@@ -49,10 +49,7 @@ function! vison#resolver#get_query(lines)
         call add(structure_type_stack, 0)
         let mode = 1
       elseif c ==# '['
-        if len(buf_list)
-          "let buf_list[len(buf_list) - 1].enumerable = 1
-          call add(buf_list, {'key': '$array', 'enumerable': 1})
-        endif
+        call add(buf_list, {'key': '$array', 'enumerable': 1})
         call add(structure_type_stack, 1)
         let is_array = is_array + 1
       elseif c ==# 't' " is matched false
@@ -87,30 +84,44 @@ function! vison#resolver#get_query(lines)
         endif
       elseif c ==# '-' || match(c, '\d') != -1 " number?
         let mode = 2
+      elseif is_array && c ==# ']'
+        call remove(buf_list, len(buf_list) - 1)
+        call remove(structure_type_stack, len(structure_type_stack) - 1)
+        let is_array = is_array - 1
+        let mode = 10
       else
         let mode = -1
         break
       endif
     elseif mode == 1
-      if c !=# '"'
-        "echom 'invalid'
+      if c ==# '}'
+        "call remove(buf_list, len(buf_list) - 1)
+        call remove(structure_type_stack, len(structure_type_stack) - 1)
+        let is_obj = is_obj - 1
+        let mode = 10
+      elseif c ==# '"'
+        let mode = 6
+      else
+        let mode = -1
         break
       endif
-      let mode = 6
     elseif mode == 2 "number
       if c ==# ','
         if is_array
           let mode = 10
         else
           call remove(buf_list, len(buf_list) - 1)
+          call remove(structure_type_stack, len(structure_type_stack) - 1)
           let mode = 1
         endif
       elseif c ==# '}'
         call remove(buf_list, len(buf_list) - 1)
+        call remove(structure_type_stack, len(structure_type_stack) - 1)
         let is_obj = is_obj - 1
         let mode = 10
       elseif c ==# ']'
         let is_array = is_array - 1
+        call remove(structure_type_stack, len(structure_type_stack) - 1)
         let mode = 10
       endif
     elseif mode == 3
@@ -166,7 +177,7 @@ function! vison#resolver#get_query(lines)
       endif
     endif
 
-    "echo c.', mode: '.mode.' st:'.string(structure_type_stack)
+    "echo c.', mode: '.mode.' st:'.string(structure_type_stack).' buf:'.string(buf_list)
     let i = i + 1
   endwhile
 

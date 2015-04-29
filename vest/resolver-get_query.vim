@@ -5,6 +5,9 @@ Context vison#resolver#get_query
   It returns [type, keys] 
     Should vison#resolver#get_query(['']) == [0, []]
     Should vison#resolver#get_query(['""']) == [10, []]
+    Should vison#resolver#get_query(['[]']) == [10, []]
+    Should vison#resolver#get_query(['{}']) == [10, []]
+    Should vison#resolver#get_query(['{"key":"value"}']) == [10, []]
     Should vison#resolver#get_query(['"{,\":}"']) == [10, []]
     Should vison#resolver#get_query(['true']) == [10, []]
     Should vison#resolver#get_query(['false']) == [10, []]
@@ -32,6 +35,8 @@ Context vison#resolver#get_query
     Should vison#resolver#get_query(['{"hoge": {']) == [1, [{'key': 'hoge', 'enumerable': 0}]]
     Should vison#resolver#get_query(['{"hoge": {"']) == [6, [{'key': 'hoge', 'enumerable': 0}]]
     Should vison#resolver#get_query(['{"hoge": {"foo": [']) == [0, [{'key': 'hoge', 'enumerable': 0}, {'key': 'foo', 'enumerable': 0}, {'key': '$array', 'enumerable': 1}]]
+    Should vison#resolver#get_query(['{"hoge": {"foo": ["bar"]}']) == [10, [{'key': 'hoge', 'enumerable': 0}]]
+    Should vison#resolver#get_query(['[']) == [0, [{'key': '$array', 'enumerable': 1}]]
   End
   It returns keys with complex inputs
     let input_lines = [

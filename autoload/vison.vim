@@ -92,15 +92,7 @@ function! vison#complete(findstart, base)
     endwhile
     return l:start - 1
   else
-    " if b:type == -1
-    "   return []
-    " elseif b:type == 0
-    "   "TODO
-    "   return []
-    " endif
-
     return vison#resolver#complete(b:cached_dict, b:type, b:query, a:base)
-
   endif
 endfunction
 " ### Complete }}}
@@ -124,36 +116,3 @@ function! vison#register_default_schema(...)
   call vison#register_schema('default', type_name)
 endfunction
 " ### Register }}}
-
-function! s:complete_core()
-  " underscore charactor stands for the cursor position.
-  " case 1: {_
-  "   should complete enbale key names.
-  "   {query: '', base: ''}
-  " case 2: { "ho_
-  "   should complete enable key names.
-  "   {query: '', base: 'ho'}
-  " case 3: { "hoge"_
-  "   should nothing. User may type ':' charactor.
-  "   {query: 'hoge', base: ''}
-  " case 4: { "hoge" :_
-  "   should complete enable strings or '[' or '{'.
-  "   {query: 'hoge', base: ''}
-  " case 5: { "hoge" : "f\"o_
-  "   {query: 'hoge', base: 'f\"o'}
-  "   should complete enable strings.
-  " case 6: { "hoge" : [_
-  "   should complete enable strings or '{'.
-  "   {query: 'hoge[0]', base: ''}
-  " case 7: { "hoge": { "foo": [{ "bar": "pi_
-  "   {query: 'hoge.foo[0].bar', base: 'pi'}
-  " case 8: { "hoge" : ["foo", "ba_
-  "   should complete enable strings or '{'.
-  "   {query: 'hoge[0]', base: 'ba'}
-  "
-  " Algorithm
-  " { "hoge": { "foo": [{ "bar": "pi_
-  " to 
-  " [ '{', ' "hoge"', ':', '{', " foo", ':', '[', '{', ' "bar"', ':', '"pi_']
-endfunction
-
