@@ -101,8 +101,6 @@ function! vison#store#get_catalog()
       let s:cache_catalog[group_name][schemaname] = filename
       if !has_key(tmp_map, schemaname)
         let tmp_map[schemaname] = [group_name, filename]
-      elseif tmp_map[schemaname] !=# 'default'
-        let tmp_map[schemaname] = [group_name, filename]
       endif
     endfor
     "let s:cache_catalog[group_name] = schemafiles
