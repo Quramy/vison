@@ -5,7 +5,7 @@ Vison is a Vim plugin to help writing `*.json` file with [JSON Schema](http://js
 Vison provides the following features:
 
 * Completion keys or values in JSON files
- * You can use more than 40 schema files provided [JSON Schema Store](http://schemastore.org/json/).
+ * You can use more than 40 schema files provided by [JSON Schema Store](http://schemastore.org/json/).
 * Manegement JSON schema files.
 
 ![capture](capt_comp.png)
@@ -40,7 +40,7 @@ To use omni-completion, you can call the `:Vison` command on the current buffer.
 
 For example, start editing with `vim package.json` (NPM configuration file) and call `:Vison package.json`
 
-If your current buffer's basename is equal to the schema name, you can ommit the argument of this command.
+If your current buffer's basename is equal to the schema name, you can omit the argument of this command.
 
 Once a schema file is applied, you can complete keys or values in the current buffer with omni-completion(type `<Ctrl-x><Ctrl-o>`).
 
