@@ -37,7 +37,7 @@ function! vison#resolver#get_query(lines)
 
   while i < l
     let c = joined[i]
-    if c ==# ' ' && mode != 6 && mode != 8
+    if (c ==# ' ' || c ==# "\t") && mode != 6 && mode != 8
       let i = i + 1
       continue
     endif
